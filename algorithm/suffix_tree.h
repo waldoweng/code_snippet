@@ -2,6 +2,7 @@
 #define _MY_SUFFIX_TREE_H_
 
 #include <string>
+#include <vector>
 using namespace std;
 
 class SuffixTreeNode;
@@ -30,8 +31,7 @@ protected:
 private:
     SuffixTreeNode *nodes;
     string m_str;
-
-
+    vector<unsigned int> str;
 };
 
 
