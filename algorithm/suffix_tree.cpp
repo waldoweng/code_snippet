@@ -2,6 +2,8 @@
 #include <cassert>
 #include "suffix_tree.h"
 #include <stdio.h>
+#include <map>
+using std::map;
 
 const unsigned int alphabet_size = 256;
 const unsigned int charater_size = sizeof(char);
@@ -21,6 +23,14 @@ public:
             return end - begin;
         else
             return current_pos - begin;
+    }
+
+    string getEdge(const string &str, unsigned int current_pos)
+    {
+        if(end != -1)
+            return str.substr(begin, end-begin+1);
+        else
+            return str.substr(begin, current_pos-begin+1);
     }
 
 public:
@@ -82,15 +92,11 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
         if(active_point.node->edges[current_charater].begin == -1)
         {
             // create a new edge
-            printf("remain_count:%d edge:%d set begin from %d to %d\n", 
-                remain_count, current_charater, active_point.node->edges[current_charater].begin, current_pos);
             active_point.node->edges[current_charater].begin = current_pos;
             active_point.node->edges[current_charater].node = &nodes[free_node_index++];
         } 
         else 
         {
-            printf("remain_count:%d edge:%d already exists!\n",
-                remain_count+1, current_charater);
             remain_count ++;
             active_point.length ++;
             active_point.edge = current_charater;
@@ -106,12 +112,14 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
         {
             active_point.node = current_edge->node;
             active_point.edge = str[current_edge->end+1];
-            active_point.length -= current_edge->getLength(current_pos);
+            active_point.length -= current_edge->getLength(current_pos)+1;
             current_edge = &(active_point.node->edges[active_point.edge]);
         }
         
         assert(current_edge->begin != -1);
         assert(current_edge->begin + active_point.length-1 < str.size());
+        printf("remain count > 1, current_edge:%s active_point.length:%d current_charater:%d\n",
+            current_edge->getEdge(m_str, current_pos).c_str(), active_point.length, current_charater);
 
         // caculate the break point
         unsigned int break_point = current_edge->begin + active_point.length;
@@ -119,8 +127,6 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
         //check if break in the middle
         if(current_charater == str[break_point])
         {
-            printf("remain_count:%d edge:%d already exists!\n",
-                remain_count+1, current_charater);
             remain_count ++;
             active_point.length ++;
         } 
@@ -138,9 +144,15 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
             prev_node = &nodes[free_node_index];
 
             current_edge->node = &nodes[free_node_index++];
-            current_edge->end = break_point - 1;
+            current_edge->end = break_point-1;
             free_node_index++;
             did_split = true;
+
+            printf("split into three edge #1:%s #2:%s #3:%s break_char:%d current_charater:%d\n",
+                current_edge->getEdge(m_str, current_pos).c_str(),
+                nodes[free_node_index-2].edges[break_edge].getEdge(m_str, current_pos).c_str(),
+                nodes[free_node_index-2].edges[current_charater].getEdge(m_str, current_pos).c_str(),
+                break_edge, current_charater);
         }
     }
 }
@@ -207,21 +219,24 @@ int SuffixTree::build()
         }
     }
     
-    printf("str:%s\n", m_str.c_str());
+    // debug 
+    map<void *, int> pointer_map;
+    for(int i = 0; i < free_node_index; i++)
+        pointer_map[&nodes[i]] = i;
+
     for(int i = 0; i < free_node_index; i++)
     {
-        printf("node #%d %p suffix_link:%p sizeof(SuffixTreeNode):%ld\n", 
-            i, &nodes[i], nodes[i].suffix_link, sizeof(SuffixTreeNode));
+        printf("node #%d[%p] suffix_link:#%d[%p]\n", 
+            i, &nodes[i], pointer_map[nodes[i].suffix_link], nodes[i].suffix_link);
+
         for(int j = 0; j < alphabet_size+1; j++)
         {
             if(nodes[i].edges[j].begin != -1)
             {
                 if(nodes[i].edges[j].end == -1) nodes[i].edges[j].end = current_pos-1;
-                printf("\t edge#%d %s node:%p\n",
-                    j, 
-                    m_str.substr(nodes[i].edges[j].begin, 
-                        nodes[i].edges[j].end-nodes[i].edges[j].begin+1).c_str(),
-                    nodes[i].edges[j].node);
+                printf("\tedge:%d dst_node#%d [%p] %s\n",
+                    j, pointer_map[nodes[i].edges[j].node], nodes[i].edges[j].node,
+                    nodes[i].edges[j].getEdge(m_str, current_pos-1).c_str());
             }
         }
     }

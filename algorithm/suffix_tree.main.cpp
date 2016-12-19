@@ -2,8 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    //SuffixTree tree("abcabxabcd");
-    SuffixTree tree("abcabxab");
+    SuffixTree tree("abcabxabcd");
     tree.build();
     return 0;
 }
