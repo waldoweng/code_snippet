@@ -243,4 +243,47 @@ int SuffixTree::build()
     return 0;
 }
 
+bool SuffixTree::isSuffix(const string &s)
+{
+    if(s.empty()) 
+        return false;
+    
+    string::const_iterator it = s.begin();
+    SuffixTreeNode *node = &nodes[0];
+
+    while(true)
+    {
+        if(node->edges[*it].begin == -1)
+            return false;
+        
+        SuffixTreeEdge &cur_edge = node->edges[*it];
+        int i = cur_edge.begin;
+        for(; i <= cur_edge.end && it != s.end(); i++, it++)
+        {
+            if(*it != str[i])
+                return false;
+        }
+        
+        if(i > cur_edge.end) {
+            if(it == s.end()) {
+                if(cur_edge.node->edges[alphabet_size].begin != -1)
+                    return true;
+                else
+                    return false;
+            } else {
+                node = cur_edge.node;
+                continue;
+            }
+        } else /* if(i <= cur_edge.end) */ {
+            assert(it == s.end());
+            if(str[i] == alphabet_size) return true;
+            else return false;
+        }
+        
+        assert("should not go here");
+        return false;
+    }
+
+    return false;
+}
 

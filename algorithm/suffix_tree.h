@@ -20,6 +20,7 @@ public:
     int build(const string &str);
 
 public:
+    bool isSuffix(const string &str);
     string findLongestPrefix(const string &str);
 
 protected:
