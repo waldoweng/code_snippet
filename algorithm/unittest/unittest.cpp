@@ -13,7 +13,7 @@ class SuffixTreeTest : public ::testing::Test
         virtual void SetUp()
         {
             srand(time(NULL));
-            int str_len = rand() % 1024;
+            int str_len = rand() % 10 + 1;
 
             for(int i = 0; i < str_len; i++)
                 str += char(rand() % 26 + 'a');
@@ -38,7 +38,7 @@ class SuffixTreeTest : public ::testing::Test
 TEST_F(SuffixTreeTest, isSuffixTest)
 {
     size_t n = str.size();
-    for(int i = 0; i < n; i++)
+    for(int i = 1; i < n; i++)
     {
         string tmp = str.substr(i);
         ASSERT_TRUE(isSuffix(tmp));
