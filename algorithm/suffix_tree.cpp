@@ -118,8 +118,8 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
         
         assert(current_edge->begin != -1);
         assert(current_edge->begin + active_point.length-1 < str.size());
-        printf("remain count > 1, current_edge:%s active_point.length:%d current_charater:%d\n",
-            current_edge->getEdge(m_str, current_pos).c_str(), active_point.length, current_charater);
+        //printf("remain count > 1, current_edge:%s active_point.length:%d current_charater:%d\n",
+        //    current_edge->getEdge(m_str, current_pos).c_str(), active_point.length, current_charater);
 
         // caculate the break point
         unsigned int break_point = current_edge->begin + active_point.length;
@@ -148,11 +148,11 @@ void SuffixTree::handleActivePoint(unsigned int current_pos, unsigned int curren
             free_node_index++;
             did_split = true;
 
-            printf("split into three edge #1:%s #2:%s #3:%s break_char:%d current_charater:%d\n",
-                current_edge->getEdge(m_str, current_pos).c_str(),
-                nodes[free_node_index-2].edges[break_edge].getEdge(m_str, current_pos).c_str(),
-                nodes[free_node_index-2].edges[current_charater].getEdge(m_str, current_pos).c_str(),
-                break_edge, current_charater);
+            //printf("split into three edge #1:%s #2:%s #3:%s break_char:%d current_charater:%d\n",
+            //    current_edge->getEdge(m_str, current_pos).c_str(),
+            //    nodes[free_node_index-2].edges[break_edge].getEdge(m_str, current_pos).c_str(),
+            //    nodes[free_node_index-2].edges[current_charater].getEdge(m_str, current_pos).c_str(),
+            //    break_edge, current_charater);
         }
     }
 }
@@ -220,26 +220,26 @@ int SuffixTree::build()
     }
     
     // debug 
-    map<void *, int> pointer_map;
-    for(int i = 0; i < free_node_index; i++)
-        pointer_map[&nodes[i]] = i;
+    //map<void *, int> pointer_map;
+    //for(int i = 0; i < free_node_index; i++)
+    //    pointer_map[&nodes[i]] = i;
 
-    for(int i = 0; i < free_node_index; i++)
-    {
-        printf("node #%d[%p] suffix_link:#%d[%p]\n", 
-            i, &nodes[i], pointer_map[nodes[i].suffix_link], nodes[i].suffix_link);
+    //for(int i = 0; i < free_node_index; i++)
+    //{
+    //    printf("node #%d[%p] suffix_link:#%d[%p]\n", 
+    //        i, &nodes[i], pointer_map[nodes[i].suffix_link], nodes[i].suffix_link);
 
-        for(int j = 0; j < alphabet_size+1; j++)
-        {
-            if(nodes[i].edges[j].begin != -1)
-            {
-                if(nodes[i].edges[j].end == -1) nodes[i].edges[j].end = current_pos-1;
-                printf("\tedge:%d dst_node#%d [%p] %s\n",
-                    j, pointer_map[nodes[i].edges[j].node], nodes[i].edges[j].node,
-                    nodes[i].edges[j].getEdge(m_str, current_pos-1).c_str());
-            }
-        }
-    }
+    //    for(int j = 0; j < alphabet_size+1; j++)
+    //    {
+    //        if(nodes[i].edges[j].begin != -1)
+    //        {
+    //            if(nodes[i].edges[j].end == -1) nodes[i].edges[j].end = current_pos-1;
+    //            printf("\tedge:%d dst_node#%d [%p] %s\n",
+    //                j, pointer_map[nodes[i].edges[j].node], nodes[i].edges[j].node,
+    //                nodes[i].edges[j].getEdge(m_str, current_pos-1).c_str());
+    //        }
+    //    }
+    //}
     return 0;
 }
 
